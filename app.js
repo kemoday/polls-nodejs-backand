@@ -32,18 +32,20 @@ app.use("/user/account/", require("./routes/users.route"));
 
 const url = process.env.MONGODB_URL || process.env.CSTR;
 
-mongoose.connect(
-  url,
-  {
+mongoose
+  .connect(url, {
     useCreateIndex: true,
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
-  },
-  () => {
-    mongoose.connection.db.dropDatabase();
-    const PORT = process.env.PORT || 8080;
+  })
+  .then(() => {
     console.log("connection to MongoDB is started!");
-    app.listen(PORT, () => console.log(`server is runing on port:${PORT}`));
-  }
-);
+    const PORT = process.env.PORT || 8080;
+    app.listen(PORT, "0.0.0.0", () =>
+      console.log(`server is runing on port:${PORT}`)
+    );
+  })
+  .catch((e) => {
+    console.log("error while connecting to MongoDB");
+  });
