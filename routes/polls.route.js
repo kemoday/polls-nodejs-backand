@@ -30,7 +30,7 @@ const isLoggedIn = (req, res, next) => {
     }
   } else
     return res
-      .status(402)
+      .status(401)
       .send({ error: true, message: "you are not logged in." });
 };
 
