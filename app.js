@@ -9,7 +9,7 @@ const app = express();
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ origin: "kemoday.github.io", credentials: true }));
+app.use(cors({ origin: "https://kemoday.github.io", credentials: true }));
 
 //defining other routes
 
