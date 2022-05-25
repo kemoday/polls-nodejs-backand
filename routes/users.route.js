@@ -63,8 +63,8 @@ router
         res
           .cookie("token", token, {
             maxAge: 3600000,
-            httpOnly: false,
-            secure: false,
+            httpOnly: true,
+            secure: true,
           })
           .status(201)
           .send({
@@ -109,8 +109,8 @@ router.route("/signin").post(validateSingginData, async (req, res) => {
       res
         .cookie("token", token, {
           maxAge: 3600000,
-          httpOnly: false,
-          secure: false,
+          httpOnly: true,
+          secure: true,
         })
         .send({
           ...req.body,

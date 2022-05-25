@@ -12,18 +12,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: "https://kemoday.github.io",
-    credentials: true,
   })
 );
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "https://kemoday.github.io");
-  res.header("Access-Control-Allow-Credentials", true);
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
 
 //defining other routes
 
