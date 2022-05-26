@@ -20,9 +20,9 @@ const validateSinggingupData = (req, res, next) => {
 };
 
 const isLoggedIn = (req, res, next) => {
-  if (req.cookies.token) {
+  if (req.body.token) {
     try {
-      jwt.verify(req.cookies.token, process.env.JWT_SECRET);
+      jwt.verify(req.body.token, process.env.JWT_SECRET);
       return res
         .status(401)
         .send({ error: true, message: "you are already logged in." });
@@ -60,19 +60,15 @@ router
           { email: req.body.email },
           process.env.JWT_SECRET
         );
-        res
-          .cookie("token", token, {
-            maxAge: 3600000,
-            httpOnly: true,
-            secure: true,
-          })
-          .status(201)
-          .send({
+        res.status(201).send({
+          user: {
             ...req.body,
             name: user.name,
             _id: user._id,
             polls: user.polls,
-          });
+          },
+          token: token,
+        });
       })
       .catch((error) => {
         if (error.code == "11000")
@@ -104,20 +100,23 @@ router.route("/signin").post(validateSingginData, async (req, res) => {
         .send({ error: true, message: "user is not found" });
 
     if (bcrypt.compare(user_password, user.password)) {
-      const token = jwt.sign({ email: req.body.email }, process.env.JWT_SECRET);
+      const token = jwt.sign(
+        { email: req.body.email },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "1h",
+        }
+      );
 
-      res
-        .cookie("token", token, {
-          maxAge: 3600000,
-          httpOnly: true,
-          secure: true,
-        })
-        .send({
+      res.send({
+        user: {
           ...req.body,
           name: user.name,
           _id: user._id,
           polls: user.polls,
-        });
+        },
+        token: token,
+      });
     }
   } catch (error) {
     console.log(error);
@@ -126,9 +125,9 @@ router.route("/signin").post(validateSingginData, async (req, res) => {
 });
 
 router.route("/user").get(async (req, res) => {
-  if (req.cookies.token) {
+  if (req.body.token) {
     try {
-      const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(req.body.token, process.env.JWT_SECRET);
       const user = await Users.findOne({ email: decoded.email })
         .populate({
           path: "polls",
