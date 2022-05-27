@@ -12,7 +12,7 @@ const validatePollData = (req, res, next) => {
     options: Joi.array().required(),
   });
 
-  const { error } = schema.validate(req.body);
+  const { error } = schema.validate(req.body.poll);
   if (error) {
     res.send({ error: true, message: error.details[0].message });
   } else {
@@ -21,9 +21,9 @@ const validatePollData = (req, res, next) => {
 };
 
 const isLoggedIn = (req, res, next) => {
-  if (req.cookies.token) {
+  if (req.body.token) {
     try {
-      jsonwebtoken.verify(req.cookies.token, process.env.JWT_SECRET);
+      jsonwebtoken.verify(req.body.token, process.env.JWT_SECRET);
       return next();
     } catch (error) {
       return res.status(404).send({ error: true, message: "invaild token" });
@@ -36,8 +36,8 @@ const isLoggedIn = (req, res, next) => {
 
 // C : /poll        -> post
 
-router.route("/").post(validatePollData, (req, res) => {
-  const newPoll = new Polls({ ...req.body, views: 0 });
+router.route("/add").post(isLoggedIn, validatePollData, (req, res) => {
+  const newPoll = new Polls({ ...req.body.poll, views: 0 });
   newPoll
     .save()
     .then((poll) => {
@@ -57,7 +57,7 @@ router.route("/").post(validatePollData, (req, res) => {
 
 // R : /poll        -> get
 
-router.route("/user/:userId").get(isLoggedIn, (req, res) => {
+router.route("/user/:userId").post(isLoggedIn, (req, res) => {
   const userId = req.params.userId;
   if (!userId) {
     return res.status(401).json({

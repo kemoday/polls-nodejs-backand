@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: ["https://kemoday.github.io"],
+    origin: ["https://kemoday.github.io", "http://localhost:3000"],
     credentials: true,
   })
 );

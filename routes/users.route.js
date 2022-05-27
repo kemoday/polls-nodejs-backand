@@ -58,7 +58,8 @@ router
       .then((user) => {
         const token = jwt.sign(
           { email: req.body.email },
-          process.env.JWT_SECRET
+          process.env.JWT_SECRET,
+          { expiresIn: "1h" }
         );
         res.status(201).send({
           user: {
@@ -124,7 +125,7 @@ router.route("/signin").post(validateSingginData, async (req, res) => {
   }
 });
 
-router.route("/user").get(async (req, res) => {
+router.route("/info").post(async (req, res) => {
   if (req.body.token) {
     try {
       const decoded = jwt.verify(req.body.token, process.env.JWT_SECRET);
