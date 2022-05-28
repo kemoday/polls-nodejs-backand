@@ -50,7 +50,12 @@ router
   .route("/signup")
   .post(isLoggedIn, validateSinggingupData, async (req, res) => {
     const hashed_password = await bcrypt.hash(req.body.password, 10);
-    const hashed_body = { ...req.body, password: hashed_password, polls: [] };
+    const hashed_body = {
+      ...req.body,
+      email: req.body.email.toLowerCase(),
+      password: hashed_password,
+      polls: [],
+    };
 
     const new_user = new Users(hashed_body);
     new_user
@@ -85,7 +90,7 @@ router
 
 router.route("/signin").post(validateSingginData, async (req, res) => {
   const user_password = req.body.password;
-  const user_email = req.body.email;
+  const user_email = req.body.email.toLowerCase();
 
   try {
     const user = await Users.findOne({ email: user_email })
